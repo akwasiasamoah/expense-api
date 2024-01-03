@@ -4,19 +4,21 @@ import * as session from 'express-session';
 import { createClient } from 'redis';
 import { ValidationPipe } from '@nestjs/common';
 import RedisStore from 'connect-redis';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
   //redis connection logic
 
   const redisClient = createClient({
-    url: 'redis://localhost:6379',
+    url: configService.getOrThrow('REDIS_URL'),
   });
 
   app.use(
     session({
-      secret: 'super_secret',
+      secret: configService.getOrThrow('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,
       store: new RedisStore({

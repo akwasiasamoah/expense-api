@@ -7,6 +7,7 @@ import { SessionGuard } from './auth/guards';
 import { ExpenseModule } from './expense/expense.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,14 +17,20 @@ import { redisStore } from 'cache-manager-redis-yet';
     ExpenseModule,
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => ({
-        store: await redisStore({
-          socket: {
-            host: 'localhost',
-            port: 6379,
-          },
-        }),
-      }),
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        return {
+          store: await redisStore({
+            socket: {
+              host: config.getOrThrow('REDIS_HOST'),
+              port: config.getOrThrow('REDIS_PORT'),
+            },
+          }),
+        };
+      },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
   ],
   providers: [
