@@ -33,6 +33,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       isGlobal: true,
     }),
   ],
+
   providers: [
     {
       provide: APP_GUARD,
