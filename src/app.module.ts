@@ -8,13 +8,17 @@ import { ExpenseModule } from './expense/expense.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    SchedulerModule,
     PrismaModule,
     AuthModule,
     UserModule,
     ExpenseModule,
+    ScheduleModule.forRoot(),
     CacheModule.registerAsync({
       isGlobal: true,
       inject: [ConfigService],
